@@ -94,7 +94,19 @@ export const fetchOracleGuidance = async (
     // Clean up potential markdown code blocks
     content = content.replace(/```json\s*/g, "").replace(/```\s*$/g, "").trim();
 
-    return JSON.parse(content);
+    const result = JSON.parse(content);
+
+    // Ensure cards are consistent with user draw in Tarot mode
+    // This prevents mismatches between drawn cards and AI response
+    if (path === 'TAROT' && Array.isArray(drawInfo)) {
+      result.cards = drawInfo;
+    }
+
+    // Ensure numeric values to prevent UI crashes
+    result.successRate = Number(result.successRate) || 0;
+    result.energyAlign = Number(result.energyAlign) || 0;
+
+    return result;
   } catch (error) {
     console.error("Oracle Service Error:", error);
     return {

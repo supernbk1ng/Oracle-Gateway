@@ -36,7 +36,8 @@ const TAROT_IMAGE_MAP: Record<string, string> = {
 };
 
 const ProgressCircle = ({ value, color, label }: { value: number, color: string, label: string }) => {
-  const data = [{ value }, { value: 100 - value }];
+  const safeValue = isNaN(Number(value)) ? 0 : Number(value);
+  const data = [{ value: safeValue }, { value: 100 - safeValue }];
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="h-32 w-32 relative">
