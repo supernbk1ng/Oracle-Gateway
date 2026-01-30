@@ -114,7 +114,11 @@ export const fetchOracleGuidance = async (
       title: "天机蒙蔽",
       interpretation: "星象紊乱，因果纠缠。请检查网络连接或API配置后重试。",
       successRate: 0,
-      energyAlign: 0
+      energyAlign: 0,
+      element: undefined,
+      cards: [],
+      lineInterpretations: [],
+      cardInterpretations: []
     };
   }
 };

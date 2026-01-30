@@ -82,6 +82,7 @@ const App: React.FC = () => {
         </div>
       )}
     </Layout>
+    </ErrorBoundary>
   );
 };
 
