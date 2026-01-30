@@ -20,4 +20,5 @@ export interface DivinationResult {
   lineInterpretations?: string[];
   cardInterpretations?: string[];
   element?: 'Metal' | 'Wood' | 'Water' | 'Fire' | 'Earth';
+  fateQuote?: string;
 }

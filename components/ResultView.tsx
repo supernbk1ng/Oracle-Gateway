@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { DivinationResult, DivinationPath } from '../types';
 import { ElementalEffects } from './ElementalEffects';
+import { FateCard } from './FateCard';
+import html2canvas from 'html2canvas';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 interface Props {
@@ -74,14 +76,43 @@ const TarotLabels = ["过去 (Past)", "现在 (Present)", "未来 (Future)"];
 export const ResultView: React.FC<Props> = ({ path, question, result, onReset }) => {
   const isTaoist = path === 'TAOIST';
   const mainColor = isTaoist ? '#34d399' : '#fbbf24';
+  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
+  const fateCardRef = useRef<HTMLDivElement>(null);
+
+  const downloadFateCard = async () => {
+    if (!fateCardRef.current) return;
+    setIsGeneratingCard(true);
+    try {
+      const canvas = await html2canvas(fateCardRef.current, {
+        useCORS: true,
+        backgroundColor: null,
+        scale: 2
+      });
+      const link = document.createElement('a');
+      link.download = `Oracle-Fate-Card-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error("Card generation failed", err);
+    } finally {
+      setIsGeneratingCard(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center max-w-5xl w-full gap-8 animate-in fade-in duration-1000">
+      {/* Hidden Fate Card Container for Capture */}
+      <div className="fixed left-[-9999px] top-0 pointer-events-none">
+        <div ref={fateCardRef}>
+          <FateCard path={path} result={result} />
+        </div>
+      </div>
+
       {/* Background Atmosphere */}
       <ElementalEffects element={result.element} />
 
       {/* Sticky Back Button Wrapper */}
-      <div className="sticky top-0 w-full z-50 flex justify-start pointer-events-none mb-4">
+      <div className="sticky top-0 w-full z-50 flex justify-between pointer-events-none mb-4 px-4 pt-4">
         <button 
           onClick={onReset}
           className="pointer-events-auto flex items-center gap-2 text-slate-500 hover:text-cyan-400 transition-colors bg-[#05070a]/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 font-mystic text-sm shadow-lg"
@@ -90,6 +121,23 @@ export const ResultView: React.FC<Props> = ({ path, question, result, onReset })
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
           </svg>
           返回观测门
+        </button>
+
+        <button 
+          onClick={downloadFateCard}
+          disabled={isGeneratingCard}
+          className="pointer-events-auto flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-900/30 backdrop-blur-md px-4 py-2 rounded-full border border-emerald-500/30 font-mystic text-sm shadow-lg disabled:opacity-50"
+        >
+          {isGeneratingCard ? (
+            <span className="animate-pulse">生成中...</span>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              生成命运卡片
+            </>
+          )}
         </button>
       </div>
 
