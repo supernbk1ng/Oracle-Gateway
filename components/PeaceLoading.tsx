@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { playWoodSound } from '../utils/sound';
 
 interface Props {
   onComplete: () => void;
@@ -35,6 +36,9 @@ export const PeaceLoading: React.FC<Props> = ({ onComplete }) => {
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
     }
+
+    // Play sound
+    playWoodSound();
   };
 
   return (

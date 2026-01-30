@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { playWoodSound } from '../utils/sound';
 
 interface Props {
   onComplete: (hexagram: string) => void;
@@ -10,33 +11,6 @@ export const TaoistCasting: React.FC<Props> = ({ onComplete, onBack }) => {
   const [lines, setLines] = useState<number[]>([]); // 0 for Yin (broken), 1 for Yang (solid)
   const [isCasting, setIsCasting] = useState(false);
   const [meritPopups, setMeritPopups] = useState<{id: number, x: number, y: number}[]>([]);
-
-  const playWoodSound = () => {
-    try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
-      
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      // Synthesis of a wooden block/click sound
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(800, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-      
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
-    } catch (e) {
-      // Ignore audio errors
-    }
-  };
 
   const castLine = () => {
     if (lines.length >= 6 || isCasting) return;
