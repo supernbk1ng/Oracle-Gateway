@@ -76,6 +76,9 @@ export const ResultView: React.FC<Props> = ({ path, question, result, onReset })
 
   return (
     <div className="flex flex-col items-center max-w-5xl w-full gap-8 animate-in fade-in duration-1000">
+      {/* Background Atmosphere */}
+      <ElementalEffects element={result.element} />
+
       {/* Sticky Back Button Wrapper */}
       <div className="sticky top-0 w-full z-50 flex justify-start pointer-events-none mb-4">
         <button 

@@ -42,6 +42,7 @@ export const fetchOracleGuidance = async (
     successRate: "0-100的胜算或成功率 (number)",
     energyAlign: "0-100的能量契合度 (number)",
     hexagramSymbol: "对应的易经卦象符号（仅限道家路径）",
+    element: "卦象所属五行 (Metal/Wood/Water/Fire/Earth) (仅限道家路径，根据卦象判断)",
     cards: ["抽出的塔罗牌名（仅限塔罗路径）"],
     lineInterpretations: ["易经六爻的每一爻详细解析，从初爻到上爻（仅限道家路径，共6项）"],
     cardInterpretations: ["三张塔罗牌分别对应的详细解析（仅限塔罗路径，共3项，顺序为：过去、现在、未来）"]

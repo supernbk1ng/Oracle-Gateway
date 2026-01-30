@@ -19,4 +19,5 @@ export interface DivinationResult {
   cards?: string[];
   lineInterpretations?: string[];
   cardInterpretations?: string[];
+  element?: 'Metal' | 'Wood' | 'Water' | 'Fire' | 'Earth';
 }

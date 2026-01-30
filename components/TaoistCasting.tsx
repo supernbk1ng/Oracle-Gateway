@@ -10,15 +10,57 @@ export const TaoistCasting: React.FC<Props> = ({ onComplete, onBack }) => {
   const [lines, setLines] = useState<number[]>([]); // 0 for Yin (broken), 1 for Yang (solid)
   const [isCasting, setIsCasting] = useState(false);
 
+  const playWoodSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      // Synthesis of a wooden block/click sound
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+      
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {
+      // Ignore audio errors
+    }
+  };
+
   const castLine = () => {
     if (lines.length >= 6 || isCasting) return;
     setIsCasting(true);
+    playWoodSound();
+    
+    // Initial haptic feedback for button press
+    if (navigator.vibrate) navigator.vibrate(20);
     
     // Simulate coin spinning
     setTimeout(() => {
       const newLine = Math.random() > 0.5 ? 1 : 0;
       setLines([newLine, ...lines]); // I-Ching is built from bottom to top
       setIsCasting(false);
+
+      // Haptic Feedback based on result (Tactile Password)
+      if (navigator.vibrate) {
+        if (newLine === 1) {
+          // Yang (Solid): Long vibration
+          navigator.vibrate(200);
+        } else {
+          // Yin (Broken): Two short vibrations
+          navigator.vibrate([50, 50, 50]);
+        }
+      }
     }, 600);
   };
 
@@ -40,26 +82,78 @@ export const TaoistCasting: React.FC<Props> = ({ onComplete, onBack }) => {
 
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-mystic text-emerald-400">虔心起卦</h2>
-        <p className="text-emerald-600/60 tracking-widest text-sm uppercase">点击铜钱，连续起卦六次</p>
+        <p className="text-emerald-600/60 tracking-widest text-sm uppercase">敲击木鱼，积攒功德，连续起卦六次</p>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-16">
-        {/* The Coins */}
+      <div className="flex flex-col md:flex-row items-center gap-16 relative">
+        {/* Merit Popups */}
+        {meritPopups.map(popup => (
+          <div 
+            key={popup.id}
+            className="fixed pointer-events-none text-emerald-400 font-bold text-xl animate-float-up z-50"
+            style={{ left: popup.x, top: popup.y }}
+          >
+            功德 +1
+          </div>
+        ))}
+
+        {/* The Wooden Fish */}
         <div className="relative">
           <button 
             onClick={castLine}
             disabled={lines.length >= 6 || isCasting}
-            className={`w-48 h-48 rounded-full border-4 border-emerald-500/30 flex items-center justify-center transition-all bg-emerald-950/20 group
-              ${lines.length < 6 && !isCasting ? 'hover:border-emerald-400 hover:shadow-[0_0_40px_rgba(52,211,153,0.3)] cursor-pointer' : 'cursor-default'}
+            className={`w-64 h-64 flex items-center justify-center transition-all group relative
+              ${lines.length < 6 && !isCasting ? 'cursor-pointer hover:scale-105' : 'cursor-default opacity-80'}
             `}
           >
-            <div className={`text-6xl text-emerald-400 transition-transform duration-500 ${isCasting ? 'animate-spin' : 'group-hover:scale-110'}`}>
-              🪙
-            </div>
+            {/* Wooden Fish SVG */}
+            <svg 
+              viewBox="0 0 200 200" 
+              className={`w-full h-full drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-transform duration-100 ${isCasting ? 'scale-95' : ''}`}
+            >
+              <g transform="translate(100, 100)">
+                 {/* Body */}
+                 <path 
+                   d="M-70,20 C-80,60 -20,80 20,80 C70,80 90,40 85,0 C80,-50 40,-70 -10,-70 C-50,-70 -70,-30 -70,20 Z" 
+                   fill="#8B4513" 
+                   stroke="#5D2906" 
+                   strokeWidth="3"
+                 />
+                 {/* Highlight/Texture */}
+                 <path 
+                   d="M-50,-40 C-20,-60 40,-50 60,-10" 
+                   fill="none" 
+                   stroke="#A0522D" 
+                   strokeWidth="2" 
+                   opacity="0.5"
+                 />
+                 {/* Opening/Mouth (The slit) */}
+                 <path 
+                   d="M-60,30 Q-20,40 40,30 Q60,30 70,20" 
+                   fill="none" 
+                   stroke="#3E1C05" 
+                   strokeWidth="6" 
+                   strokeLinecap="round"
+                 />
+                 <path 
+                   d="M-60,30 Q-20,40 40,30 Q60,30 70,20" 
+                   fill="none" 
+                   stroke="#1a0b02" 
+                   strokeWidth="2" 
+                   strokeLinecap="round"
+                 />
+                 {/* Stick (Hammer) - Only visible when casting/hitting - Simplified as animation or static icon */}
+              </g>
+              {/* Stick hitting animation hint */}
+              <g className={`transition-opacity duration-100 ${isCasting ? 'opacity-100' : 'opacity-0'}`}>
+                 <circle cx="120" cy="50" r="15" fill="#D2691E" />
+                 <path d="M120,50 L180,-20" stroke="#8B4513" strokeWidth="8" strokeLinecap="round" />
+              </g>
+            </svg>
+            
+            {/* Glow effect */}
+            <div className={`absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full transition-opacity duration-300 -z-10 ${isCasting ? 'opacity-60' : 'opacity-0'}`} />
           </button>
-          {isCasting && (
-            <div className="absolute inset-0 border-4 border-emerald-400 rounded-full animate-ping opacity-20" />
-          )}
         </div>
 
         {/* The Hexagram Display */}
