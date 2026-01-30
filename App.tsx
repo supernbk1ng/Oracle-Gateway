@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Layout } from './components/Layout';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { PeaceLoading } from './components/PeaceLoading';
 import { OracleGateway } from './components/OracleGateway';
 import { TarotDraw } from './components/TarotDraw';
@@ -41,7 +42,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <ErrorBoundary>
+      <Layout>
       {screen === Screen.Loading && (
         <PeaceLoading onComplete={() => setScreen(Screen.Gateway)} />
       )}
