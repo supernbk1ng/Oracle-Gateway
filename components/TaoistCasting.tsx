@@ -9,6 +9,7 @@ interface Props {
 export const TaoistCasting: React.FC<Props> = ({ onComplete, onBack }) => {
   const [lines, setLines] = useState<number[]>([]); // 0 for Yin (broken), 1 for Yang (solid)
   const [isCasting, setIsCasting] = useState(false);
+  const [meritPopups, setMeritPopups] = useState<{id: number, x: number, y: number}[]>([]);
 
   const playWoodSound = () => {
     try {

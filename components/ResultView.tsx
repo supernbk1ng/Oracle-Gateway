@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { DivinationResult, DivinationPath } from '../types';
+import { ElementalEffects } from './ElementalEffects';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 interface Props {
